@@ -2229,6 +2229,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ollama-rs"
+version = "0.1.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8d4afa0fc3b4baa5804364e94580210bed42caa6513e26ca2f4aca3e482578a1"
+dependencies = [
+ "reqwest",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
 name = "once_cell"
 version = "1.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3767,6 +3778,8 @@ dependencies = [
 name = "templite"
 version = "0.0.0"
 dependencies = [
+ "anyhow",
+ "ollama-rs",
  "serde",
  "serde_json",
  "tauri",
