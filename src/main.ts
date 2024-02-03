@@ -1,6 +1,13 @@
+// === Tauri related ===
 import { appWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/api/dialog";
+// === UI/Anim related ===
+import { gsap } from "gsap";
+import { TextPlugin } from "gsap/TextPlugin";
 
+gsap.registerPlugin(TextPlugin);
+
+// === Global Variables ===
 let filePath: string | null = null;
 
 // === File Drop Zone ===
@@ -32,8 +39,12 @@ dropZone.addEventListener("click", async () => {
       dropZone.innerText = dropZoneTexts.error;
       return;
     }
-    dropZone.innerText = selected;
     filePath = selected;
+    gsap.to(dropZone, {
+      duration: 2.5,
+      text: selected,
+      ease: "slow(0.7,0.7,false)",
+    });
   }
 });
 
@@ -65,6 +76,11 @@ appWindow.listen("tauri://file-drop", ({ payload }: { payload: string[] }) => {
     return;
   }
 
-  dropZone.innerText = payload[0];
   filePath = payload[0];
+
+  gsap.to(dropZone, {
+    duration: 2,
+    text: payload[0],
+    ease: "none",
+  });
 });
