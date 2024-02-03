@@ -1,40 +1,70 @@
-import { tempdir } from "@tauri-apps/api/os";
-import { appConfigDir } from "@tauri-apps/api/path";
-import { downloadDir } from "@tauri-apps/api/path";
-import { ask, message } from "@tauri-apps/api/dialog";
+import { appWindow } from "@tauri-apps/api/window";
+import { open } from "@tauri-apps/api/dialog";
 
-const tempdirPath = await tempdir();
-// path to the app's configuration directory
-const appConfigDirPath = await appConfigDir();
-const downloadDirPath = await downloadDir();
+let filePath: string | null = null;
 
-console.log("tmp dir : " + tempdirPath);
-console.log("config dir : " + appConfigDirPath);
-console.log("download dir : " + downloadDirPath);
+// === File Drop Zone ===
 
-// Native dialog
-const dialogBtn = document.getElementById("dialogBtn");
+let dropZoneTexts = {
+  default:
+    '<p>Drag &apos;n&apos; drop a file or <span class="cta-min">click to select one</span></p>',
+  hover: "Drop it!",
+  error: "One file at a time please",
+  unknown: "An error occurred. Please try again",
+};
 
-if (dialogBtn === null) {
-  throw new Error("dialogBtn is null");
-} else {
-  dialogBtn.addEventListener("click", async () => {
-    const yes = await ask("This action cannot be reverted. Are you sure?", {
-      title: "Tauri",
-      type: "info",
-    });
+const dropZone = document.getElementById("dropzone") as HTMLDivElement;
+dropZone.innerHTML = dropZoneTexts.default;
 
-    console.log(yes);
+dropZone.addEventListener("click", async () => {
+  const selected = await open({
+    multiple: false,
+    filters: [
+      {
+        name: "Document",
+        extensions: ["txt", "md", "html"],
+      },
+    ],
   });
-}
 
-// Native messages
-const messageBtn = document.getElementById("messageBtn");
+  if (selected !== null) {
+    if (Array.isArray(selected)) {
+      dropZone.innerText = dropZoneTexts.error;
+      return;
+    }
+    dropZone.innerText = selected;
+    filePath = selected;
+  }
+});
 
-if (messageBtn === null) {
-  throw new Error("messageBtn is null");
-} else {
-  messageBtn.addEventListener("click", async () => {
-    await message("File not found", { title: "Tauri", type: "error" });
-  });
-}
+appWindow.listen(
+  "tauri://file-drop-hover",
+  ({ payload }: { payload: string[] }) => {
+    if (payload.length === 1) {
+      dropZone.innerText = dropZoneTexts.hover;
+    }
+  },
+);
+
+appWindow.listen("tauri://file-drop-cancelled", () => {
+  if (filePath !== null) {
+    dropZone.innerText = filePath;
+    return;
+  }
+  dropZone.innerHTML = dropZoneTexts.default;
+});
+
+appWindow.listen("tauri://file-drop", ({ payload }: { payload: string[] }) => {
+  if (payload.length === 0) {
+    dropZone.innerText = dropZoneTexts.unknown;
+    return;
+  }
+
+  if (payload.length > 1) {
+    dropZone.innerText = dropZoneTexts.error;
+    return;
+  }
+
+  dropZone.innerText = payload[0];
+  filePath = payload[0];
+});

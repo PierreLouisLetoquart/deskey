@@ -12,21 +12,7 @@
   },
   "tauri": {
     "allowlist": {
-      "all": false,
-      "dialog": {
-        "ask": true,
-        "message": true
-      },
-      "os": {
-        "all": true
-      },
-      "path": {
-        "all": true
-      },
-      "shell": {
-        "all": false,
-        "open": true
-      }
+      "all": true
     },
     "bundle": {
       "active": true,
@@ -46,8 +32,9 @@
     "windows": [
       {
         "fullscreen": false,
-        "resizable": true,
-        "title": "templite",
+        "center": true,
+        "resizable": false,
+        "title": "GenKW.",
         "width": 800,
         "height": 600
       }
