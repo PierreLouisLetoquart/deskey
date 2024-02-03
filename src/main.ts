@@ -1,6 +1,7 @@
 // === Tauri related ===
 import { appWindow } from "@tauri-apps/api/window";
 import { open } from "@tauri-apps/api/dialog";
+import { invoke } from "@tauri-apps/api";
 // === UI/Anim related ===
 import { gsap } from "gsap";
 import { TextPlugin } from "gsap/TextPlugin";
@@ -83,4 +84,34 @@ appWindow.listen("tauri://file-drop", ({ payload }: { payload: string[] }) => {
     text: payload[0],
     ease: "none",
   });
+});
+
+// === Generate keywords ===
+
+const generateKeywords = async (path: string): Promise<string[]> => {
+  let response: string[] = [];
+
+  invoke<string>("gen_keywords", {
+    document: path,
+    model: "model-keywords:latest",
+  })
+    .then((res) => {
+      JSON.parse(res).forEach((text: string) => {
+        response.push(text);
+      });
+    })
+    .catch((e) => {
+      console.error(e);
+    });
+
+  return response;
+};
+
+const btn = document.getElementById("submit") as HTMLButtonElement;
+btn.addEventListener("click", async () => {
+  if (filePath === null) {
+    return;
+  }
+  const keywords = await generateKeywords(filePath);
+  console.log(keywords);
 });
