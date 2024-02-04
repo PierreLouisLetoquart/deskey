@@ -17,7 +17,7 @@ https://bun.sh/
 Clone the repo :
 
 ```bash
-git clone url
+git clone git@github.com:PierreLouisLetoquart/templite.git
 cd templite
 ```
 
