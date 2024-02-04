@@ -1,83 +1,97 @@
 :root {
-    --text: #272727;
-    --background: #ffffff;
-    --rounded: 0.5rem;
+  --text: #272727;
+  --background: #ffffff;
+  --rounded: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        --text: #dddddd;
-        --background: #222222;
-    }
+  :root {
+    --text: #dddddd;
+    --background: #222222;
+  }
 }
 
 *,
 *::before,
 *::after {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    font: inherit;
+  margin: 0;
+  padding: 0;
+  font: inherit;
 }
 
 html {
-    color-scheme: dark light;
+  color-scheme: dark light;
 }
 
 body {
-    min-height: 100vh;
-    overflow: hidden;
-    font-family: ui-sans-serif, system-ui, sans-serif;
-    font-size: 16px;
-    background-color: var(--background);
-    color: var(--text);
-    user-select: none;
-    cursor: default;
+  min-height: 100vh;
+  overflow: hidden;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-size: 16px;
+  background-color: var(--background);
+  color: var(--text);
+  user-select: none;
+  cursor: default;
 }
 
 #app {
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
-    padding: 2.5rem 1rem 3.5rem 1rem;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2.5rem 1rem 3.5rem 1rem;
 }
 
 #dropzone {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 #keywords {
-    flex-grow: 1;
+  flex-grow: 1;
+  overflow-y: scroll;
 }
 
 .container {
-    width: 100%;
-    max-width: 600px;
-    padding: 2rem;
-    margin-left: auto;
-    margin-right: auto;
+  width: 100%;
+  max-width: 600px;
+  padding: 2rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-container {
+  display: grid;
+  place-items: center;
+}
+
+.cta-container > button {
+  padding: 0.5rem 1rem;
+  border-radius: var(--rounded);
+  background-color: var(--text);
+  color: var(--background);
+  cursor: pointer;
 }
 
 .border-dashed {
-    border-width: 1px;
-    border-color: var(--text);
-    border-style: dashed;
-    border-radius: var(--rounded);
+  border-width: 1px;
+  border-color: var(--text);
+  border-style: dashed;
+  border-radius: var(--rounded);
 }
 
 .cta-min {
-    text-decoration-color: var(--text);
-    text-decoration-line: underline;
-    text-decoration-thickness: 1px;
-    text-decoration-style: solid;
-    text-underline-offset: 4px;
-    cursor: pointer;
+  text-decoration-color: var(--text);
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-decoration-style: solid;
+  text-underline-offset: 4px;
+  cursor: pointer;
 }

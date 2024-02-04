@@ -10,6 +10,40 @@ gsap.registerPlugin(TextPlugin);
 
 // === Global Variables ===
 let filePath: string | null = null;
+let ollamaIsUp = false;
+let ollamaError: string | null = null;
+
+// === Generate keywords ===
+invoke("verify_model")
+  .then(() => {
+    ollamaIsUp = true;
+  })
+  .catch((e: string) => {
+    ollamaIsUp = false;
+    ollamaError = e;
+  });
+
+const keywords = document.getElementById("keywords") as HTMLDivElement;
+
+const generateKeywords = async () => {
+  if (ollamaIsUp === false) {
+    keywords.innerText = ollamaError || "Ollama is down";
+  }
+
+  if (filePath === null) {
+    keywords.innerText = "No file selected";
+  }
+
+  keywords.innerText = "Generating keywords...";
+
+  invoke<string>("generate_keywords", { path: filePath })
+    .then((res) => {
+      keywords.innerText = res;
+    })
+    .catch((e) => {
+      keywords.innerText = e;
+    });
+};
 
 // === File Drop Zone ===
 
@@ -66,52 +100,27 @@ appWindow.listen("tauri://file-drop-cancelled", () => {
   dropZone.innerHTML = dropZoneTexts.default;
 });
 
-appWindow.listen("tauri://file-drop", ({ payload }: { payload: string[] }) => {
-  if (payload.length === 0) {
-    dropZone.innerText = dropZoneTexts.unknown;
-    return;
-  }
+appWindow.listen(
+  "tauri://file-drop",
+  async ({ payload }: { payload: string[] }) => {
+    if (payload.length === 0) {
+      dropZone.innerText = dropZoneTexts.unknown;
+      return;
+    }
 
-  if (payload.length > 1) {
-    dropZone.innerText = dropZoneTexts.error;
-    return;
-  }
+    if (payload.length > 1) {
+      dropZone.innerText = dropZoneTexts.error;
+      return;
+    }
 
-  filePath = payload[0];
+    filePath = payload[0];
 
-  gsap.to(dropZone, {
-    duration: 2,
-    text: payload[0],
-    ease: "none",
-  });
-});
-
-// === Generate keywords ===
-
-const generateKeywords = async (path: string): Promise<string[]> => {
-  let response: string[] = [];
-
-  invoke<string>("gen_keywords", {
-    document: path,
-    model: "model-keywords:latest",
-  })
-    .then((res) => {
-      JSON.parse(res).forEach((text: string) => {
-        response.push(text);
-      });
-    })
-    .catch((e) => {
-      console.error(e);
+    gsap.to(dropZone, {
+      duration: 2,
+      text: payload[0],
+      ease: "none",
     });
 
-  return response;
-};
-
-const btn = document.getElementById("submit") as HTMLButtonElement;
-btn.addEventListener("click", async () => {
-  if (filePath === null) {
-    return;
-  }
-  const keywords = await generateKeywords(filePath);
-  console.log(keywords);
-});
+    await generateKeywords();
+  },
+);
