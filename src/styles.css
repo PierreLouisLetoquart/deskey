@@ -57,9 +57,33 @@ body {
 #keywords {
   flex-grow: 1;
   overflow-y: scroll;
+
+  width: 100%;
+  max-width: 600px;
+
+  margin-left: auto;
+  margin-right: auto;
+
+  text-align: center;
 }
 
 #keywords-list {
+  list-style: none;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+#keywords-list > li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0.5rem 1rem;
+  margin: 0.5rem 0;
+
+  color: var(--text);
 }
 
 .container {

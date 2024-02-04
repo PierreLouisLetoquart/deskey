@@ -13,6 +13,13 @@ let filePath: string | null = null;
 let ollamaIsUp = false;
 let ollamaError: string | null = null;
 
+type keyword = {
+  text: string;
+  relevance: number;
+};
+
+let keywordsList: { keywords: keyword[] } | null = null;
+
 // === Generate keywords ===
 invoke("verify_model")
   .then(() => {
@@ -23,25 +30,43 @@ invoke("verify_model")
     ollamaError = e;
   });
 
-const keywords = document.getElementById("keywords") as HTMLDivElement;
+const keywordsEl = document.getElementById("keywords") as HTMLDivElement;
 
 const generateKeywords = async () => {
   if (ollamaIsUp === false) {
-    keywords.innerText = ollamaError || "Ollama is down";
+    keywordsEl.innerText = ollamaError || "Ollama is down";
   }
 
   if (filePath === null) {
-    keywords.innerText = "No file selected";
+    keywordsEl.innerText = "No file selected";
   }
 
-  keywords.innerText = "Generating keywords...";
+  keywordsEl.innerText = "Generating keywords...";
 
   invoke<string>("generate_keywords", { path: filePath })
     .then((res) => {
-      keywords.innerText = res;
+      keywordsList = JSON.parse(res);
+
+      if (!keywordsList) {
+        keywordsEl.innerText = "No keywords found";
+        return;
+      }
+
+      keywordsEl.innerHTML = "";
+
+      const keywordsListEl = document.createElement("ul");
+      keywordsListEl.id = "keywords-list";
+
+      keywordsList.keywords.forEach((el: keyword) => {
+        const li = document.createElement("li");
+        li.innerHTML = `${el.text} <span>${el.relevance}</span>`;
+        keywordsListEl.appendChild(li);
+      });
+
+      keywordsEl.appendChild(keywordsListEl);
     })
     .catch((e) => {
-      keywords.innerText = e;
+      keywordsEl.innerText = e;
     });
 };
 
