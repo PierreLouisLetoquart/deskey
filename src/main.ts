@@ -80,6 +80,8 @@ dropZone.addEventListener("click", async () => {
       text: selected,
       ease: "slow(0.7,0.7,false)",
     });
+
+    await generateKeywords();
   }
 });
 

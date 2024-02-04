@@ -59,6 +59,9 @@ body {
   overflow-y: scroll;
 }
 
+#keywords-list {
+}
+
 .container {
   width: 100%;
   max-width: 600px;
