@@ -1,0 +1,62 @@
+FROM mistral:latest
+
+TEMPLATE """
+{{- if .First }}
+### System:
+{{ .System }}
+{{- end }}
+
+### User:
+{{ .Prompt }}
+
+### Response:
+"""
+
+# sets a custom system message to specify the behavior of LLM
+SYSTEM """
+As an expert in document analysis, your proficiency lies in extracting precise keywords that effectively describe a given document.
+
+The expected format for the generated keywords is as follows:
+{
+  "text": "keyword",
+  "relevance": number
+}
+
+"text" describe a single keyword.
+"relevance" tell how relevant the keyword is for the given document. It is include between 0 and 1.
+
+Ensure that the results are presented in a well-structured JSON format.
+"""
+
+# sets the temperature to 1 [higher is more creative, lower is more coherent]
+PARAMETER temperature 0.2
+
+# sets the context window size to 8 x 2048 (def val), this controls how many tokens the LLM can use as context to generate the next token
+PARAMETER num_ctx 16384
+
+# sets the number of threads to use during computation, set this value to the number of physical CPU cores your system has !
+# PARAMETER num_thread 8
+
+LICENSE """
+MIT License
+
+Copyright (c) 2024 Pierre-Louis
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""

@@ -1,50 +1,23 @@
-use anyhow::{bail, Context, Result};
+use std::error::Error;
+use std::result::Result;
+
+use ollama_rs::generation::completion::request::GenerationRequest;
 use ollama_rs::generation::format::FormatType;
-use ollama_rs::{generation::completion::request::GenerationRequest, models::LocalModel, Ollama};
-use serde_json;
+use ollama_rs::Ollama;
 
-#[tauri::command]
-pub async fn gen_keywords(document: &str, model: &str) -> Result<String, String> {
-    let ollama = Ollama::default();
+// generate the keywords list from a given document. Returns a json object stringified
+pub async fn gen_keywords(
+    ollama: &Ollama,
+    model: &str,
+    prompt: &str,
+) -> Result<String, Box<dyn Error>> {
+    let req = GenerationRequest::new(model.into(), prompt.to_string()).format(FormatType::Json);
 
-    let models_available = list_local_models(&ollama)
-        .await
-        .map_err(|err| err.to_string())?;
-
-    check_model_availability(model, &models_available).map_err(|err| err.to_string())?;
-
-    let content = std::fs::read_to_string(document)
-        .with_context(|| format!("Unable to read the file: {:?}", document))
-        .map_err(|err| err.to_string())?;
-
-    println!("Generating keywords...");
-
-    let res = ollama
-        .generate(GenerationRequest::new(model.to_string(), content).format(FormatType::Json))
-        .await
-        .map_err(|err| anyhow::anyhow!("Unable to generate the document: {}", err));
+    let res = ollama.generate(req).await;
 
     if let Ok(res) = res {
-        let j = serde_json::to_string(&res.response).map_err(|err| err.to_string())?;
-        Ok(j)
+        Ok(res.response)
     } else {
-        return Err("Unable to generate the document".to_string());
+        return Err("An error occured during the generation".into());
     }
-}
-
-async fn list_local_models(ollama: &Ollama) -> Result<Vec<LocalModel>> {
-    ollama
-        .list_local_models()
-        .await
-        .with_context(|| "Unable to list local models")
-}
-
-fn check_model_availability(model_name: &str, models_available: &[LocalModel]) -> Result<()> {
-    if !models_available
-        .iter()
-        .any(|model| model.name == model_name)
-    {
-        bail!("Model '{}' is not available.", model_name);
-    }
-    Ok(())
 }
