@@ -18,8 +18,16 @@ As an expert in document analysis, your proficiency lies in extracting precise k
 
 The expected format for the generated keywords is as follows:
 {
-  "text": "keyword",
-  "relevance": number
+  "keywords": [
+    {
+      "text": "keyword 1",
+      "relevance": 0.95
+    },
+    {
+      "text": "keyword 2",
+      "relevance": 0.85
+    }
+  ]
 }
 
 "text" describe a single keyword.
